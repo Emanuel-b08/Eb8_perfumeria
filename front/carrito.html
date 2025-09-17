@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Carrito de Compras</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🛒 Tu Carrito</h1>
+    <div class="producto">
+      <img id="img" src="" alt="Producto">
+      <h2 id="nombre"></h2>
+      <p class="precio" id="precio"></p>
+    </div>
+
+    <h2>Formulario de Pago</h2>
+    <form onsubmit="return confirmarCompra()">
+      <input type="text" placeholder="Nombre completo" required><br>
+      <input type="email" placeholder="Correo electrónico" required><br>
+      <input type="text" placeholder="Número de tarjeta" required><br>
+      <button type="submit">Pagar</button>
+    </form>
+
+    <div class="volver-inicio">
+      <button onclick="window.location.href='index.html'">⬅ Volver al inicio</button>
+    </div>
+  </div>
+</body>
+
+  <script>
+    // Leer parámetros de la URL
+    const params = new URLSearchParams(window.location.search);
+    document.getElementById("nombre").textContent = params.get("nombre");
+    document.getElementById("precio").textContent = "$" + params.get("precio") + " COP";
+    document.getElementById("img").src = params.get("img");
+
+    // Confirmar compra y redirigir
+    function confirmarCompra() {
+      alert("✅ Compra realizada con éxito. Gracias por tu pedido de " + params.get("nombre") + "!");
+      setTimeout(() => {
+        window.location.href = "index.html?mensaje=gracias"; 
+      }, 1500); 
+      return false;
+    }
+  </script>
+</body>
+</html>

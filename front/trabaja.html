@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trabaja con Nosotros - EB8 Perfumería</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Trabaja con Nosotros</h1>
+    </header>
+
+    <main class="contenido">
+        <section class="trabaja">
+            <h2>Envía tu Información</h2>
+            <!-- Ahora apunta al PHP -->
+            <form id="Formtrabaja">
+
+
+                <label for="nombre">Nombre completo:</label>
+                <input type="text" id="nombre" name="nombre" required>
+
+                <label for="correo">Correo electrónico:</label>
+                <input type="email" id="correo" name="correo" required>
+
+                <label for="telefono">Teléfono:</label>
+                <input type="tel" id="telefono" name="telefono">
+
+                <label for="mensaje">Mensaje:</label>
+                <textarea id="mensaje" name="mensaje" rows="5" placeholder="Cuéntanos sobre ti..." required></textarea>
+
+                
+
+                <button type="submit">Enviar</button>
+            </form>
+
+            <div id="resultado"></div>
+        </section>
+    </main>
+
+    <div class="volver-inicio">
+        <button onclick="window.location.href='index.html'">⬅ Volver al inicio</button>
+    </div>
+
+    <footer>
+        <p class="copy">© 2025 Eb8 Perfumeria - Todos los derechos reservados - Página elaborada por: Emanuel Builes Ochoa</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script>
+      document
+        .getElementById("Formtrabaja")
+        .addEventListener("submit", function (event) {
+          event.preventDefault(); // Evita recargar la página
+
+          // Capturamos los valores
+          let nombre = document.getElementById("nombre").value;
+          let correo = document.getElementById("correo").value;
+          let telefono = document.getElementById("telefono").value;
+          let mensaje = document.getElementById("mensaje").value;
+
+          axios
+            .post("http://localhost:3000/trabaja", {
+              nombre: nombre,
+              correo: correo,
+              telefono: telefono,
+              mensaje: mensaje,
+            })
+            .then(function (response) {
+              console.log("Respuesta del servidor:", response.data);
+              document.getElementById("resultado").innerHTML =
+                "<p style=font-size: 30px;>Formulario enviado con éxito</p>";
+
+                document.getElementById("nombre").value = ''
+                document.getElementById("correo").value = ''
+                document.getElementById("mensaje").value = ''
+            })
+            .catch(function (error) {
+              console.error("Error al enviar:", error);
+              document.getElementById("resultado").innerHTML =
+                "<b>Error al enviar el formulario</b>";
+            });
+        });
+    </script>
+</body>
+</html>
