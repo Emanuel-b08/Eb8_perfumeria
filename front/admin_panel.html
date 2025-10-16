@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel de Administración</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🧑‍💼 Panel de Administración</h1>
+    <p id="bienvenida"></p>
+    <button id="logout">Cerrar Sesión</button>
+  </div>
+
+  <script>
+    const nombre = localStorage.getItem("nombre");
+    const rol = localStorage.getItem("rol");
+
+    if (rol !== "admin") {
+      alert("🚫 Acceso denegado. Solo administradores.");
+      window.location.href = "login.html";
+    }
+
+    document.getElementById("bienvenida").textContent = `Bienvenido, ${nombre} 👋`;
+
+    document.getElementById("logout").addEventListener("click", () => {
+      localStorage.clear();
+      window.location.href = "admin_login.html";
+    });
+  </script>
+</body>
+</html>

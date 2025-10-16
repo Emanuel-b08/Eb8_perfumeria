@@ -1,95 +1,44 @@
-const express = require("express");
-const mysql = require("mysql2/promise"); // usamos la versión con promesas
-const cors = require("cors")
+// back/index.js
+import express from "express";
+import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
+import productosRoutes from "./routes/productos.routes.js";
+import authRoutes from "./routes/auth.js";
+import trabajaRoutes from "./routes/trabaja.routes.js";
+import pqrsRoutes from "./routes/pqrs.routes.js";
+import contactanosRoutes from "./routes/contactanos.routes.js";
 
 const app = express();
-app.use(cors())
+app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Configuración de conexión a MySQL
-const dbConfig = {
-  host: "localhost",
-  user: "root",
-  password: "Emanuel0515",
-  database: "perfumeria_db"
-};
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// Endpoint para obtener todos los usuarios
-app.get("/pqrs", async (req, res) => {
-  try {
-    const connection = await mysql.createConnection(dbConfig);
-    const [rows] = await connection.execute("SELECT * FROM pqrs");
-    await connection.end();
-    res.json(rows);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+// Servir carpeta front (estática)
+const frontPath = path.join(__dirname, "../front");
+app.use(express.static(frontPath, { index: false }));
+
+// Servir imágenes subidas
+app.use("/uploads", express.static(path.join(frontPath, "uploads")));
+
+// Rutas API
+app.use("/api/productos", productosRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/trabaja", trabajaRoutes);
+app.use("/api/pqrs", pqrsRoutes);
+app.use("/api/contactanos", contactanosRoutes);
+
+console.log("✅ Rutas de productos y autenticación cargadas correctamente");
+
+// Ruta por defecto (login admin por ejemplo)
+app.get("/", (req, res) => {
+  res.sendFile(path.join(frontPath, "admin_login.html"));
 });
 
-// Endpoint para agregar un usuario
-app.post("/pqrs", async (req, res) => {
-  const { nombre, correo, tipo, mensaje } = req.body;
-  try {
-    const connection = await mysql.createConnection(dbConfig);
-    const [result] = await connection.execute(
-      "INSERT INTO pqrs (nombre, correo, tipo, mensaje) VALUES (?, ?, ?, ?)",
-      [nombre, correo, tipo, mensaje]
-    );
-    await connection.end();
-    res.status(201).json({ id: result.insertId, nombre, correo, tipo, mensaje });
-  } catch (err) {
-    res.status(500).json({ error: err.message })
-  }
-});
-
-
-// Endpoint para obtener todos los usuarios
-app.get("/contactanos", async (req, res) => {
-  try {
-    const connection = await mysql.createConnection(dbConfig);
-    const [rows] = await connection.execute("SELECT * FROM contactanos");
-    await connection.end();
-    res.json(rows);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Endpoint para agregar un usuario
-app.post("/contactanos", async (req, res) => {
-  const { nombre, correo, mensaje } = req.body;
-  try {
-    const connection = await mysql.createConnection(dbConfig);
-    const [result] = await connection.execute(
-      "INSERT INTO contactanos (nombre, correo, mensaje) VALUES (?, ?, ?)",
-      [nombre, correo, mensaje]
-    );
-    await connection.end();
-    res.json({ id: result.insertId, nombre, correo, mensaje });
-  } catch (err) {
-    res.status(500).json({ error: err.message })
-  }
-});
-
-
-
-
-app.post("/trabaja", async (req, res) => {
-  const { nombre, correo, telefono, mensaje } = req.body;
-  try {
-    const connection = await mysql.createConnection(dbConfig);
-    const [result] = await connection.execute(
-      "INSERT INTO trabaja (nombre, correo, telefono, mensaje) VALUES (?, ?, ?, ?)",
-      [nombre, correo, telefono, mensaje ]
-    );
-    await connection.end();
-    res.json({ id: result.insertId, nombre, correo, telefono, mensaje });
-  } catch (err) {
-    res.status(500).json({ error: err.message })
-  }
-});
-
-// Iniciar servidor
-app.listen(3000, () => {
-  console.log("Servidor corriendo en http://localhost:3000");
+const PORT = process.env.PORT || 3000; // <-- puerto 3000
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor backend corriendo en el puerto ${PORT}`);
 });

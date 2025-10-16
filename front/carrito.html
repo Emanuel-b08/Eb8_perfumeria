@@ -8,41 +8,128 @@
 <body>
   <div class="container">
     <h1>🛒 Tu Carrito</h1>
-    <div class="producto">
-      <img id="img" src="" alt="Producto">
-      <h2 id="nombre"></h2>
-      <p class="precio" id="precio"></p>
-    </div>
 
-    <h2>Formulario de Pago</h2>
-    <form onsubmit="return confirmarCompra()">
-      <input type="text" placeholder="Nombre completo" required><br>
-      <input type="email" placeholder="Correo electrónico" required><br>
-      <input type="text" placeholder="Número de tarjeta" required><br>
-      <button type="submit">Pagar</button>
+    <!-- Botón para cerrar sesión -->
+    <button onclick="cerrarSesion()" class="logout-btn">Cerrar sesión</button>
+
+    <!-- Lista dinámica de productos -->
+    <div id="listaCarrito"></div>
+
+    <!-- Total -->
+    <h2 id="total"></h2>
+
+    <h2>Formulario de Pedido</h2>
+    <form id="pedidoForm">
+      <input type="text" name="cliente" placeholder="Nombre completo" required><br>
+      <input type="email" name="correo" placeholder="Correo electrónico" required><br>
+      <input type="text" name="direccion" placeholder="Dirección de envío" required><br>
+      <select name="metodoPago" required>
+        <option value="">Seleccione método de pago</option>
+        <option value="tarjeta">Tarjeta</option>
+        <option value="efectivo">Efectivo</option>
+        <option value="transferencia">Transferencia</option>
+      </select><br>
+      <button type="submit">Confirmar Pedido</button>
     </form>
 
-    <div class="volver-inicio">
-      <button onclick="window.location.href='index.html'">⬅ Volver al inicio</button>
-    </div>
+    <pre id="pedidoResultado" class="alerta"></pre>
   </div>
-</body>
 
+  <!-- ==================== Lógica del carrito ==================== -->
   <script>
-    // Leer parámetros de la URL
-    const params = new URLSearchParams(window.location.search);
-    document.getElementById("nombre").textContent = params.get("nombre");
-    document.getElementById("precio").textContent = "$" + params.get("precio") + " COP";
-    document.getElementById("img").src = params.get("img");
+  const API = "http://localhost:3000";
+  const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+  const lista = document.getElementById("listaCarrito");
+  const totalHTML = document.getElementById("total");
 
-    // Confirmar compra y redirigir
-    function confirmarCompra() {
-      alert("✅ Compra realizada con éxito. Gracias por tu pedido de " + params.get("nombre") + "!");
-      setTimeout(() => {
-        window.location.href = "index.html?mensaje=gracias"; 
-      }, 1500); 
-      return false;
+  // ==================== Mostrar productos ====================
+  if (carrito.length === 0) {
+    lista.innerHTML = "<p>Tu carrito está vacío 🛒</p>";
+  } else {
+    let total = 0;
+    carrito.forEach((p, index) => {
+      const subtotal = p.valor * p.cantidad;
+      total += subtotal;
+      const item = document.createElement("div");
+      item.className = "producto";
+      item.innerHTML = `
+        <img src="${p.img}" alt="${p.nombre}" width="100">
+        <h3>${p.nombre}</h3>
+        <p>Precio: $${p.valor.toLocaleString()} COP</p>
+        <p>Cantidad: ${p.cantidad}</p>
+        <p>Subtotal: $${subtotal.toLocaleString()} COP</p>
+        <button onclick="eliminarDelCarrito(${index})">❌ Eliminar</button>
+      `;
+      lista.appendChild(item);
+    });
+    totalHTML.textContent = "💰 Total: $" + total.toLocaleString() + " COP";
+  }
+
+  // ==================== Eliminar producto ====================
+  function eliminarDelCarrito(index) {
+    carrito.splice(index, 1);
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+    location.reload();
+  }
+
+  // ==================== Enviar pedido ====================
+  document.getElementById("pedidoForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (carrito.length === 0) {
+      document.getElementById("pedidoResultado").textContent = "❌ Tu carrito está vacío.";
+      return;
     }
+
+    const data = Object.fromEntries(new FormData(e.target));
+    const metodoPago = data.metodoPago;
+
+    if (!["tarjeta","efectivo","transferencia"].includes(metodoPago)) {
+      document.getElementById("pedidoResultado").textContent = "❌ Método de pago inválido.";
+      return;
+    }
+
+    try {
+      let resultados = [];
+
+      for (const prod of carrito) {
+        const res = await fetch(`${API}/pedidos`, {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + localStorage.getItem("token") // 🔑 Agregamos token
+          },
+          body: JSON.stringify({
+            productoId: prod.id,
+            cliente: data.cliente,
+            correo: data.correo,
+            direccion: data.direccion,
+            cantidad: prod.cantidad,
+            metodoPago
+          })
+        });
+
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.error || "Error al registrar pedido");
+        resultados.push(result);
+      }
+
+      localStorage.removeItem("carrito");
+      document.getElementById("pedidoResultado").textContent =
+        "✅ Todos los pedidos fueron registrados exitosamente.\n" + JSON.stringify(resultados, null, 2);
+
+      // Opcional: redirigir después de unos segundos
+      setTimeout(() => { window.location.href = "index.html"; }, 4000);
+
+    } catch (err) {
+      document.getElementById("pedidoResultado").textContent = "❌ " + err.message;
+    }
+  });
+  </script>
+
+  <!-- ==================== Verificación de login ==================== -->
+  <script src="js/auth.js"></script>
+  <script>
+    verificarLogin();
   </script>
 </body>
 </html>

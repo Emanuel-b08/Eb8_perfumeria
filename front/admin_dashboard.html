@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Administración - Eb8 Perfumería</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #1e2a38;
+      color: white;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #243447;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    h1 { margin: 0; }
+    .logout {
+      background-color: crimson;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    main {
+      padding: 2rem;
+    }
+    .card {
+      background: #2e3b4e;
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🛠️ Panel de Administración</h1>
+    <button id="logoutBtn" class="logout">Cerrar sesión</button>
+  </header>
+
+  <main>
+    <h2>Bienvenido, <span id="adminName"></span> 👋</h2>
+    <p>Desde aquí puedes gestionar tus productos, imágenes y usuarios.</p>
+
+    <div class="card">
+      <h3>📦 Gestión de Productos</h3>
+      <button onclick="window.location.href='admin_productos.html'">Ir a Productos</button>
+    </div>
+  </main>
+
+  <script src="admin_dashboard.js"></script>
+</body>
+</html>

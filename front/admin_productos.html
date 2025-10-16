@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestión de Productos - Eb8 Perfumería</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #1e2a38;
+      color: white;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #243447;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .btn {
+      padding: 0.6rem 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn-agregar { background-color: #28a745; color: white; }
+    .btn-editar { background-color: #ffc107; color: black; }
+    .btn-eliminar { background-color: #dc3545; color: white; }
+    .btn-volver { background-color: #007bff; color: white; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 2rem;
+    }
+    th, td {
+      border: 1px solid #2f455c;
+      padding: 10px;
+      text-align: center;
+    }
+    th { background-color: #32465a; }
+    tr:nth-child(even) { background-color: #263646; }
+
+    .form-container {
+      background-color: #2e3b4e;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-top: 1.5rem;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: none;
+      margin-bottom: 1rem;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+    img {
+      width: 70px;
+      height: 70px;
+      border-radius: 6px;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📦 Gestión de Productos</h1>
+    <button class="btn btn-volver" onclick="window.location.href='admin_dashboard.html'">⬅ Volver</button>
+  </header>
+
+  <main class="container">
+
+    <div id="formulario" class="form-container">
+      <h2 id="tituloFormulario">Nuevo Producto</h2>
+
+      <form id="formProducto" enctype="multipart/form-data">
+        <input type="hidden" id="id">
+        <label>Nombre:</label>
+        <input type="text" id="nombre" required>
+
+        <label>Descripción:</label>
+        <input type="text" id="descripcion" required>
+
+        <label>Precio:</label>
+        <input type="number" id="precio" required>
+
+        <label>Imagen:</label>
+        <input type="file" id="imagen" accept="image/*">
+
+        <button type="submit">Guardar</button>
+      </form>
+
+<table id="tablaProductos">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>Descripción</th>
+      <th>Precio</th>
+      <th>Imagen</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+  </main>
+
+  <script src="admin_productos.js"></script>
+</body>
+</html>
